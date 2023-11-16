@@ -1,51 +1,72 @@
-var createError = require('http-errors');
-var express = require('express');
+var createError = require('http-errors')
+var express = require('express')
 // Set up mongoose connection
-const mongoose = require("mongoose");
-mongoose.set("strictQuery", false);
-const mongoDB = "insert_your_database_url_here";
 
-main().catch((err) => console.log(err));
-async function main() {
-  await mongoose.connect(mongoDB);
-};
+const { MongoClient, ServerApiVersion } = require('mongodb')
+const uri =
+  'mongodb+srv://swbrookshire:swbrookshire@cluster0.puy4tmk.mongodb.net/?retryWrites=true&w=majority'
 
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+// Create a MongoClient with a MongoClientOptions object to set the Stable API version
+const client = new MongoClient(uri, {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  },
+})
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+async function run() {
+  try {
+    // Connect the client to the server	(optional starting in v4.7)
+    await client.connect()
+    // Send a ping to confirm a successful connection
+    await client.db('admin').command({ ping: 1 })
+    console.log(
+      'Pinged your deployment. You successfully connected to MongoDB!'
+    )
+  } finally {
+    // Ensures that the client will close when you finish/error
+    await client.close()
+  }
+}
+run().catch(console.dir)
 
-var app = express();
+var path = require('path')
+var cookieParser = require('cookie-parser')
+var logger = require('morgan')
+
+var indexRouter = require('./routes/index')
+var usersRouter = require('./routes/users')
+
+var app = express()
 
 // view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'views'))
+app.set('view engine', 'pug')
 
-app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(logger('dev'))
+app.use(express.json())
+app.use(express.urlencoded({ extended: false }))
+app.use(cookieParser())
+app.use(express.static(path.join(__dirname, 'public')))
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('/', indexRouter)
+app.use('/users', usersRouter)
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  next(createError(404));
-});
+app.use(function (req, res, next) {
+  next(createError(404))
+})
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+  res.locals.message = err.message
+  res.locals.error = req.app.get('env') === 'development' ? err : {}
 
   // render the error page
-  res.status(err.status || 500);
-  res.render('error');
-});
+  res.status(err.status || 500)
+  res.render('error')
+})
 
-module.exports = app;
+module.exports = app
