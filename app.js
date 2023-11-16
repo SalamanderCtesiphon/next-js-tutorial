@@ -1,19 +1,16 @@
 var createError = require('http-errors')
 var express = require('express')
 // Set up mongoose connection
+// Set up mongoose connection
+const mongoose = require('mongoose')
+mongoose.set('strictQuery', false)
+const mongoDB =
+  'mongodb+srv://swbrookshire:978wfjyKFU6WySJP@cluster0.4tel69x.mongodb.net/local_library?retryWrites=true&w=majority'
 
-const { MongoClient, ServerApiVersion } = require('mongodb')
-const uri =
-  'mongodb+srv://swbrookshire:swbrookshire@cluster0.puy4tmk.mongodb.net/?retryWrites=true&w=majority'
-
-// Create a MongoClient with a MongoClientOptions object to set the Stable API version
-const client = new MongoClient(uri, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  },
-})
+main().catch((err) => console.log(err))
+async function main() {
+  await mongoose.connect(mongoDB)
+}
 
 async function run() {
   try {
