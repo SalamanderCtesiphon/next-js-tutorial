@@ -1,6 +1,6 @@
 var createError = require('http-errors')
 var express = require('express')
-// Set up mongoose connection
+
 // Set up mongoose connection
 const mongoose = require('mongoose')
 mongoose.set('strictQuery', false)
